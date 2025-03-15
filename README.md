@@ -1,5 +1,9 @@
 # HappyHiker
+
 Web app for the everyday hiker
+
+
+Daryle Tan
 
 
 
@@ -7,6 +11,7 @@ Web app for the everyday hiker
 KimH added
 
 Hello!
+
 
 
 
