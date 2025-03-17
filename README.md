@@ -1,7 +1,6 @@
 # HappyHiker
 
 Web app for the everyday hiker
- Jonathan
 ------------------------------
 Elevator pitch - team 2!
 
