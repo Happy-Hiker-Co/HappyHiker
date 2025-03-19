@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import './App.css'
+import AudioPlayer from './components/AudioPlayer'
 
 function App() {
  
 
   return (
     <>
-      <h1>map and stuff goes here!</h1>
+      < AudioPlayer />
     </>
   )
 }
