@@ -10,7 +10,7 @@ const AudioPlayer = () => {
 
   return (
     <div className="Audio-Player">
-      <ReactHowler src="https://happyhiker-audio.s3.us-east-2.amazonaws.com/file_example_MP3_700KB.mp3" 
+      <ReactHowler src="https://happyhiker-audio.s3.us-east-2.amazonaws.com/Breathe+in+confidence%2C+exhale+doubt.mp3" 
         playing={playing}
         volume = { volume / 100 }
         initialVolume = {50}
