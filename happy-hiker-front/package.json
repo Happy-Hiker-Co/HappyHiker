@@ -16,6 +16,8 @@
     "@mui/material": "^6.4.8",
     "@mui/styled-engine-sc": "^6.4.6",
     "howler": "^2.2.4",
+    "axios": "^1.8.3",
+    "mapbox-gl": "^3.10.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-howler": "^5.2.0",
