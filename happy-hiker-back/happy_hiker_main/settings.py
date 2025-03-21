@@ -42,7 +42,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "happy_hiker.urls"
+ROOT_URLCONF = "happy_hiker_main.urls"
 
 TEMPLATES = [
     {
@@ -60,7 +60,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "happy_hiker.wsgi.application"
+WSGI_APPLICATION = "happy_hiker_main.wsgi.application"
 
 
 # Database
