@@ -5,23 +5,41 @@ import Search from "./components/Search"
 import Map from "./components/Map"
 
 function App() {
-  const [mapData, setMapData] = useState({
-    center: null,
-    trailCoordinates: null,
+  const [trailData, setTrailData] = useState({
+    trailCoordinates: [],
+    origin: null,
+    destination: null,
+    distance: null,
+    elevationGain: null,
   })
 
-  const handleSearch = (data) => {
-    setMapData(data)
+  const handleSearch = ({
+    trailCoordinates,
+    origin,
+    destination,
+    distance,
+    elevationGain,
+  }) => {
+    setTrailData({
+      trailCoordinates,
+      origin,
+      destination,
+      distance,
+      elevationGain,
+    })
   }
 
   return (
     <>
-      <AudioPlayer />
       <Search onSearch={handleSearch} />
       <Map
-        center={mapData.center}
-        trailCoordinates={mapData.trailCoordinates}
+        trailCoordinates={trailData.trailCoordinates}
+        origin={trailData.origin}
+        destination={trailData.destination}
+        distance={trailData.distance}
+        elevationGain={trailData.elevationGain}
       />
+      <AudioPlayer />
     </>
   )
 }
