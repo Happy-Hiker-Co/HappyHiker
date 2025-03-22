@@ -1,9 +1,8 @@
-from django.contrib.gis.db import models
+from django.db import models
 
 
 class Trail(models.Model):
     name = models.CharField(max_length=255)
-    image = models.ImageField(upload_to="trail_images/", null=True, blank=True)
     lat = models.FloatField()
     long = models.FloatField()
     distance = models.FloatField(help_text="Trail distance in miles")
@@ -16,3 +15,12 @@ class Trail(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class TrailImage(models.Model):
+    trail = models.ForeignKey(Trail, on_delete=models.CASCADE, related_name="images")
+    image = models.ImageField(upload_to="trail_images/")
+    caption = models.CharField(max_length=255, blank=True)
+
+    def __str__(self):
+        return f"{self.trail.name} image"
