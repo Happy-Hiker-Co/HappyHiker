@@ -1,5 +1,6 @@
-import { useState } from 'react'
 import './App.css'
+import React, { useState } from 'react'
+import { AudioProvider } from './contexts/AudioContext'
 import AudioPlayer from './components/AudioPlayer'
 
 function App() {
@@ -7,7 +8,9 @@ function App() {
 
   return (
     <>
-      < AudioPlayer />
+      <AudioProvider>
+        < AudioPlayer />
+      </AudioProvider>
     </>
   )
 }
