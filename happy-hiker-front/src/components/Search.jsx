@@ -8,38 +8,11 @@ const Search = ({ onSearch }) => {
     if (!trailName) return alert("Please enter a trail name")
 
     try {
-      const npsResponse = await axios.get(
-        "https://developer.nps.gov/api/v1/places",
-        {
-          params: {
-            api_key: "NPS_API_KEY",
-            parkCode: "yose",
-            q: trailName,
-          },
-        },
-      )
-
-      const places = npsResponse.data.data
-      if (places.length > 0) {
-        const trail = places[0]
-        const [lng, lat] = trail.latitudeLongitude.split(",").map(Number)
-        onSearch({ center: [lng, lat] })
-      } else {
-        await fallbackSearch(trailName)
-      }
-    } catch (error) {
-      console.error("NPS API Error:", error)
-      await fallbackSearch(trailName)
-    }
-  }
-
-  const fallbackSearch = async (name) => {
-    try {
       const query = `
                 [out:json];
                 (
-                    way["highway"="path"]["name"~"${name}",i](37.5,-119.7,38.0,-119.2);
-                    way["highway"="footway"]["name"~"${name}",i](37.5,-119.7,38.0,-119.2);
+                    way["highway"="path"]["name"~"${trailName}",i](37.5,-119.7,38.0,-119.2);
+                    way["highway"="footway"]["name"~"${trailName}",i](37.5,-119.7,38.0,-119.2);
                 );
                 out geom;
             `
@@ -48,7 +21,7 @@ const Search = ({ onSearch }) => {
         query,
       )
       const trails = overpassResponse.data.elements
-
+      console.log(trails) // log
       if (trails.length > 0) {
         const trail = trails[0]
         const coordinates = trail.geometry.map((point) => [
@@ -57,7 +30,7 @@ const Search = ({ onSearch }) => {
         ])
         onSearch({ trailCoordinates: coordinates })
       } else {
-        alert("Trail not found")
+        alert("Trail not found in OSM")
       }
     } catch (error) {
       console.error("OSM Error:", error)

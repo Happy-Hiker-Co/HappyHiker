@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react"
 import mapboxgl from "mapbox-gl"
 
-mapboxgl.accessToken = "MAPBOX_TOKEN"
+mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN
 
 const Map = ({ center, trailCoordinates }) => {
   const mapContainer = useRef(null)
@@ -14,33 +14,35 @@ const Map = ({ center, trailCoordinates }) => {
         style: "mapbox://styles/mapbox/outdoors-v11",
         center: center || [-119.5383, 37.8651],
         zoom: 9,
+        interactive: true,
       })
     }
 
-    if (trailCoordinates && trailCoordinates.length > 0) {
-      map.current.flyTo({ center: trailCoordinates[0], zoom: 13 })
+    const currentMap = map.current
+    if (center && center.length === 2) {
+      currentMap.flyTo({ center, zoom: 12 })
+    }
 
-      if (map.current.getSource("trail")) {
-        map.current.getSource("trail").setData({
-          type: "Feature",
-          geometry: {
-            type: "LineString",
-            coordinates: trailCoordinates,
-          },
-        })
+    if (trailCoordinates && trailCoordinates.length > 0) {
+      currentMap.flyTo({ center: trailCoordinates[0], zoom: 13 })
+
+      const trailData = {
+        type: "Feature",
+        geometry: {
+          type: "LineString",
+          coordinates: trailCoordinates,
+        },
+      }
+
+      if (currentMap.getSource("trail")) {
+        currentMap.getSource("trail").setData(trailData)
       } else {
-        map.current.on("load", () => {
-          map.current.addSource("trail", {
+        currentMap.on("load", () => {
+          currentMap.addSource("trail", {
             type: "geojson",
-            data: {
-              type: "Feature",
-              geometry: {
-                type: "LineString",
-                coordinates: trailCoordinates,
-              },
-            },
+            data: trailData,
           })
-          map.current.addLayer({
+          currentMap.addLayer({
             id: "trail-layer",
             type: "line",
             source: "trail",
@@ -50,6 +52,12 @@ const Map = ({ center, trailCoordinates }) => {
             },
           })
         })
+      }
+    }
+    return () => {
+      if (currentMap) {
+        currentMap.remove()
+        map.current = null
       }
     }
   }, [center, trailCoordinates])
