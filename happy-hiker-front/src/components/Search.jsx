@@ -4,13 +4,62 @@ import axios from "axios"
 const Search = ({ onSearch }) => {
   const [trailName, setTrailName] = useState("")
   const [startPoint, setStartPoint] = useState("")
+  const [activeFilter, setActiveFilter] = useState(null)
+  const [filteredTrails, setFilteredTrails] = useState([])
+  const [startPointError, setStartPointError] = useState("") // Error for startPoint
+  const [trailNameError, setTrailNameError] = useState("") // Error for trailName
+
+  const sampleTrails = [
+    {
+      name: "Half Dome",
+      distance: 14.2,
+      dogFriendly: false,
+      difficulty: "hard",
+      popularity: 4.9,
+    },
+    {
+      name: "Yosemite Falls",
+      distance: 7.2,
+      dogFriendly: false,
+      difficulty: "moderate",
+      popularity: 4.7,
+    },
+    {
+      name: "Mirror Lake",
+      distance: 2.4,
+      dogFriendly: true,
+      difficulty: "easy",
+      popularity: 4.3,
+    },
+    {
+      name: "Glacier Point",
+      distance: 1.0,
+      dogFriendly: true,
+      difficulty: "easy",
+      popularity: 4.8,
+    },
+  ]
 
   const searchTrail = async () => {
-    if (!trailName) return alert("Please enter a trail name")
-    if (!startPoint) return alert("Please enter a starting point")
+    // Reset errors before validation
+    setStartPointError("")
+    setTrailNameError("")
+
+    // Check if fields are populated
+    if (!startPoint) {
+      setStartPointError(
+        "Both starting point and destination point must be populated",
+      )
+      return
+    }
+    if (!trailName) {
+      setTrailNameError(
+        "Both starting point and destination point must be populated",
+      )
+      return
+    }
 
     try {
-      // Get origin coordinates
       const originResponse = await axios.post(
         "/api/places/v1/places:searchText",
         { textQuery: `${startPoint} trailhead Yosemite National Park` },
@@ -22,16 +71,13 @@ const Search = ({ onSearch }) => {
           },
         },
       )
-      console.log("Origin Response:", originResponse.data)
-
       const originPlace = originResponse.data.places[0]
       if (!originPlace) {
-        alert("Starting point not found in Google Places")
+        setStartPointError("Starting point not found in Google Places")
         return
       }
       const originLatLng = originPlace.location
 
-      // Get destination (trail) placeId and coordinates
       const placesResponse = await axios.post(
         "/api/places/v1/places:searchText",
         { textQuery: `${trailName} Yosemite National Park` },
@@ -43,18 +89,14 @@ const Search = ({ onSearch }) => {
           },
         },
       )
-      console.log("Places Response:", placesResponse.data)
-
       const place = placesResponse.data.places[0]
       if (!place) {
-        alert("Trail not found in Google Places")
+        setTrailNameError("Trail not found in Google Places")
         return
       }
       const placeId = place.id
       const destinationLatLng = place.location
-      console.log("Place ID:", placeId)
 
-      // Compute route with distance
       const routePayload = {
         origin: {
           location: {
@@ -67,7 +109,6 @@ const Search = ({ onSearch }) => {
         destination: { placeId },
         travelMode: "WALK",
       }
-      console.log("Routes Request:", routePayload)
 
       const routesResponse = await axios.post(
         "/api/routes/directions/v2:computeRoutes",
@@ -81,20 +122,17 @@ const Search = ({ onSearch }) => {
           },
         },
       )
-      console.log("Routes Response:", routesResponse.data)
-
       const route = routesResponse.data.routes[0]
       if (!route || !route.polyline?.encodedPolyline) {
-        alert("Route not found")
+        setTrailNameError("Route not found")
         return
       }
 
       const path = decodePolyline(route.polyline.encodedPolyline)
       const distanceMeters = route.distanceMeters || 0
-      const distanceMiles = (distanceMeters * 0.000621371).toFixed(2) // Meters to miles
-      const distanceKm = (distanceMeters / 1000).toFixed(2) // Meters to km
+      const distanceMiles = (distanceMeters * 0.000621371).toFixed(2)
+      const distanceKm = (distanceMeters / 1000).toFixed(2)
 
-      // Sample points for elevation (e.g., every 10th point or max 100)
       const sampledPoints = path.filter(
         (_, i) => i % Math.max(1, Math.floor(path.length / 100)) === 0,
       )
@@ -102,51 +140,157 @@ const Search = ({ onSearch }) => {
         "/api/google/maps/api/elevation/json",
         {
           params: {
-            locations: sampledPoints.map((p) => `${p[1]},${p[0]}`).join("|"), // lat,lng format
+            locations: sampledPoints.map((p) => `${p[1]},${p[0]}`).join("|"),
             key: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
           },
         },
       )
-      console.log("Elevation Response:", elevationResponse.data)
-
       const elevations = elevationResponse.data.results.map((r) => r.elevation)
       let elevationGain = 0
       for (let i = 1; i < elevations.length; i++) {
         const diff = elevations[i] - elevations[i - 1]
-        if (diff > 0) elevationGain += diff // Sum positive changes
+        if (diff > 0) elevationGain += diff
       }
-      const elevationGainFeet = (elevationGain * 3.28084).toFixed(2) // Meters to feet
+      const elevationGainFeet = (elevationGain * 3.28084).toFixed(2)
 
       onSearch({
         trailCoordinates: path,
         origin: [originLatLng.longitude, originLatLng.latitude],
         destination: [destinationLatLng.longitude, destinationLatLng.latitude],
         distance: { miles: distanceMiles, km: distanceKm },
-        elevationGain: elevationGainFeet, // In feet
+        elevationGain: elevationGainFeet,
       })
     } catch (error) {
       console.error("API Error:", error.response?.data || error.message)
-      alert("Could not locate the trail or starting point")
+      setTrailNameError("Could not locate the trail or starting point")
     }
+  }
+
+  // Handle Enter key press on individual inputs
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault()
+      searchTrail()
+    }
+  }
+
+  const applyFilter = (filter) => {
+    if (activeFilter === filter && filteredTrails.length > 0) {
+      setActiveFilter(null)
+      setFilteredTrails([])
+      return
+    }
+
+    setActiveFilter(filter)
+
+    let results = [...sampleTrails]
+    if (filter === "dogFriendly") {
+      results = results.filter((trail) => trail.dogFriendly)
+    } else if (filter === "difficulty") {
+      results = results.filter((trail) => trail.difficulty === "moderate")
+    } else if (filter === "popularity") {
+      results.sort((a, b) => b.popularity - a.popularity)
+    }
+
+    setFilteredTrails(results)
+  }
+
+  const buttonStyle = (filter) => ({
+    padding: "5px 10px",
+    marginRight: "10px",
+    backgroundColor: activeFilter === filter ? "#4CAF50" : "#f0f0f0",
+    color: activeFilter === filter ? "white" : "black",
+    border: "1px solid #ccc",
+    borderRadius: "5px",
+    cursor: "pointer",
+  })
+
+  const errorStyle = {
+    color: "red",
+    fontSize: "12px",
+    marginTop: "5px",
   }
 
   return (
     <div style={{ margin: "20px" }}>
-      <input
-        type="text"
-        value={startPoint}
-        onChange={(e) => setStartPoint(e.target.value)}
-        placeholder="Enter starting point (e.g., Happy Isles)"
-        style={{ padding: "5px", marginRight: "10px", marginBottom: "10px" }}
-      />
-      <input
-        type="text"
-        value={trailName}
-        onChange={(e) => setTrailName(e.target.value)}
-        placeholder="Enter destination point (e.g., Half Dome)"
-        style={{ padding: "5px", marginRight: "10px" }}
-      />
-      <button onClick={searchTrail}>Search</button>
+      <form onSubmit={(e) => e.preventDefault()}>
+        <div>
+          <input
+            type="text"
+            value={startPoint}
+            onChange={(e) => {
+              setStartPoint(e.target.value)
+              setStartPointError("") // Clear error when typing
+            }}
+            onKeyPress={handleKeyPress}
+            placeholder="Enter starting point (e.g., Happy Isles)"
+            style={{
+              padding: "5px",
+              marginRight: "10px",
+              marginBottom: "10px",
+            }}
+          />
+          {startPointError && <div style={errorStyle}>{startPointError}</div>}
+        </div>
+        <div>
+          <input
+            type="text"
+            value={trailName}
+            onChange={(e) => {
+              setTrailName(e.target.value)
+              setTrailNameError("") // Clear error when typing
+            }}
+            onKeyPress={handleKeyPress}
+            placeholder="Enter destination point (e.g., Half Dome)"
+            style={{ padding: "5px", marginRight: "10px" }}
+          />
+          {trailNameError && <div style={errorStyle}>{trailNameError}</div>}
+        </div>
+      </form>
+
+      <div style={{ marginTop: "20px" }}>
+        <button
+          style={buttonStyle("dogFriendly")}
+          onClick={() => applyFilter("dogFriendly")}
+        >
+          Dog-Friendly
+        </button>
+        <button
+          style={buttonStyle("difficulty")}
+          onClick={() => applyFilter("difficulty")}
+        >
+          Difficulty Level
+        </button>
+        <button
+          style={buttonStyle("popularity")}
+          onClick={() => applyFilter("popularity")}
+        >
+          Popularity
+        </button>
+      </div>
+
+      {filteredTrails.length > 0 && (
+        <div style={{ marginTop: "20px" }}>
+          <h3>Filtered Trails:</h3>
+          {filteredTrails.map((trail, index) => (
+            <div
+              key={index}
+              style={{
+                border: "1px solid #ddd",
+                padding: "10px",
+                marginBottom: "10px",
+                borderRadius: "5px",
+              }}
+            >
+              <h4>{trail.name}</h4>
+              <p>Distance: {trail.distance} miles</p>
+              <p>Dog-Friendly: {trail.dogFriendly ? "Yes" : "No"}</p>
+              <p>Difficulty: {trail.difficulty}</p>
+              <p>Popularity: {trail.popularity}/5</p>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
