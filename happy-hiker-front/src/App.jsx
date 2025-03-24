@@ -4,6 +4,7 @@ import AudioPlayer from "./components/AudioPlayer"
 import { AudioProvider } from './contexts/AudioContext'
 import Search from "./components/Search"
 import Map from "./components/Map"
+import BottomNavBar from "./components/BottomNavBar"
 
 function App() {
   const [trailData, setTrailData] = useState({
@@ -41,7 +42,8 @@ function App() {
           distance={trailData.distance}
           elevationGain={trailData.elevationGain}
         />
-        <AudioPlayer />
+        < BottomNavBar />
+        {/* <AudioPlayer /> */}
       </AudioProvider>
 
     </>
