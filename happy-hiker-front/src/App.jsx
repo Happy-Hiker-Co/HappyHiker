@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
 import "./App.css"
-import AudioPlayer from "./components/AudioPlayer"
+import React, { useState } from 'react'
+import { UserTokenProvider } from './contexts/UserTokenContext'
+import { UserInfoProvider } from "./contexts/UserContext"
 import { AudioProvider } from './contexts/AudioContext'
 import Search from "./components/Search"
 import Map from "./components/Map"
@@ -33,19 +34,21 @@ function App() {
 
   return (
     <>
-      <AudioProvider>
-        <Search onSearch={handleSearch} />
-        <Map
-          trailCoordinates={trailData.trailCoordinates}
-          origin={trailData.origin}
-          destination={trailData.destination}
-          distance={trailData.distance}
-          elevationGain={trailData.elevationGain}
-        />
-        < BottomNavBar />
-        {/* <AudioPlayer /> */}
-      </AudioProvider>
-
+      <userTokenProvider>
+        <UserInfoProvider>
+          <AudioProvider>
+            <Search onSearch={handleSearch} />
+            <Map
+              trailCoordinates={trailData.trailCoordinates}
+              origin={trailData.origin}
+              destination={trailData.destination}
+              distance={trailData.distance}
+              elevationGain={trailData.elevationGain}
+            />
+            < BottomNavBar /> 
+          </AudioProvider>
+        </UserInfoProvider>
+      </userTokenProvider>
     </>
   )
 }
