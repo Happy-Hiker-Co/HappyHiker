@@ -252,7 +252,7 @@ const Search = ({ onSearch }) => {
           style={buttonStyle("difficulty")}
           onClick={() => applyFilter("difficulty")}
         >
-          Moderate Difficulty
+          Difficulty Level
         </button>
         <button
           style={buttonStyle("popularity")}
