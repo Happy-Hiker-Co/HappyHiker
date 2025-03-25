@@ -14,7 +14,7 @@ SECRET_KEY = "django-insecure-hgm&nxn1+ugr*^9=!rtkhb*g7p3yij*gr8mo&uamvq69k35vl8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -29,16 +29,23 @@ INSTALLED_APPS = [
     "rest_framework",
     "trail_nav",
     "user_profile",
+     "corsheaders", 
+    "django.contrib.gis",
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173", 
 ]
 
 ROOT_URLCONF = "happy_hiker.urls"
