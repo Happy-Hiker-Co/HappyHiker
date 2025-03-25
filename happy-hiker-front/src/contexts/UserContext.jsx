@@ -52,5 +52,5 @@ export const UserInfoProvider = ({ children }) => {
         </UserContext.Provider>
     )
 } 
-export { UserContext }
+
 

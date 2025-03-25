@@ -3,8 +3,9 @@ import React, { createContext, useState, useEffect} from "react";
 // have to call the create function to make a context
 const UserTokenContext = createContext()
 
+
 // need a provider to wrap our app - the children are our props to pass
-export const UserTokenProvider = ({ children }) => {
+    export const UserTokenProvider = ({ children }) => {
     
     // state for out token - starts off as null (doesn't exist)
     const [token, setToken] = useState(null)
@@ -41,3 +42,4 @@ export const UserTokenProvider = ({ children }) => {
         </UserTokenContext.Provider>
     )
 }
+export default UserTokenContext

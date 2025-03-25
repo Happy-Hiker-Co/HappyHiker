@@ -34,7 +34,7 @@ function App() {
 
   return (
     <>
-      <userTokenProvider>
+      <UserTokenProvider>
         <UserInfoProvider>
           <AudioProvider>
             <Search onSearch={handleSearch} />
@@ -48,7 +48,7 @@ function App() {
             < BottomNavBar /> 
           </AudioProvider>
         </UserInfoProvider>
-      </userTokenProvider>
+      </UserTokenProvider>
     </>
   )
 }
