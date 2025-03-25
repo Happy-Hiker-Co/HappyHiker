@@ -13,3 +13,4 @@ python-decouple
 pyjwt
 # added for Auth0 - KKH
 python-jose
+
