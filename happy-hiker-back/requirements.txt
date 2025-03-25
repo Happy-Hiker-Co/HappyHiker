@@ -5,3 +5,11 @@ psycopg2-binary
 pillow
 python-dotenv
 requests
+# added for Auth0 - KKH
+django_extensions
+# added for Auth0 - KKH
+python-decouple
+# added for Auth0 - KKH
+pyjwt
+# added for Auth0 - KKH
+python-jose

@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -14,7 +15,7 @@ SECRET_KEY = "django-insecure-hgm&nxn1+ugr*^9=!rtkhb*g7p3yij*gr8mo&uamvq69k35vl8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 
 # Application definition
@@ -29,9 +30,12 @@ INSTALLED_APPS = [
     "rest_framework",
     "trail_nav",
     "user_profile",
+    "corsheaders",
+    "django_extensions",
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -39,6 +43,10 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
 ]
 
 ROOT_URLCONF = "happy_hiker.urls"
@@ -121,3 +129,12 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # MEDIA SETTINGS:
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+DEBUG = True
+
+AUTH0_DOMAIN = config("AUTH0_DOMAIN")
+AUTH0_CLIENT_ID = config("AUTH0_CLIENT_ID")
+AUTH0_CLIENT_SECRET = config("AUTH0_CLIENT_SECRET")
+AUTH0_AUDIENCE = config("AUTH0_AUDIENCE")
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

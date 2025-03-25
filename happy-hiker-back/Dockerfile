@@ -12,6 +12,8 @@ RUN apt-get update && apt-get install -y \
     binutils \
     libproj-dev \
     libpq-dev \
+    # added postgresql-client for db troubleshooting (Auth0) - KKH
+    postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
 ENV CPLUS_INCLUDE_PATH=/usr/include/gdal
