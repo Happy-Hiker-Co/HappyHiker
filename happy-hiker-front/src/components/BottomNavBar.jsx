@@ -13,6 +13,8 @@ import AudioPlayer from './AudioPlayer';
 import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
 import Stack from '@mui/material/Stack';
 import NavButtons from './NavButtons';
+import UserProfileComponent from './UserProfileComponent';
+import { Padding } from '@mui/icons-material';
 
 
 
@@ -64,14 +66,14 @@ function SwipeableEdgeDrawer(props) {
       <Global
         styles={{
           '.MuiDrawer-root > .MuiPaper-root': {
-            height: `calc(50% - ${drawerBleeding}px)`,
+            height: `calc( - ${drawerBleeding}px)`,
             overflow: 'visible',
           },
         }}
       />
       <Box sx={{ textAlign: 'center', pt: 1, background:"#F5F5DC", alignItems:"center", border:"thin, black, 2px"}}>
-        <Button onClick={toggleDrawer(true)} sx={{background:"#F15A29", marginBottom:"20px"}}> < KeyboardDoubleArrowUpIcon sx={{fontSize:"large", color:"#000000", background:"#f15a29", width:"100%",}} /> </Button>
-        <NavButtons />
+        <Button onClick={toggleDrawer(true)} sx={{background:"#F15A29"}}> < KeyboardDoubleArrowUpIcon sx={{fontSize:"large", color:"#000000", background:"#f15a29", width:"100%"}} /> </Button>
+        {/* <NavButtons /> */}
       </Box>
       <SwipeableDrawer
         container={container}
@@ -97,6 +99,7 @@ function SwipeableEdgeDrawer(props) {
           <Puller />
         </StyledBox>
             < AudioPlayer />
+            < UserProfileComponent />
       </SwipeableDrawer>
     </Root>
   );

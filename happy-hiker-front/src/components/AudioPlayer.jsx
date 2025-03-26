@@ -58,7 +58,7 @@ export default function AudioPlayer() {
   }, [clickedButton])
   
   return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "20px", background:"#F5F5DC", boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)", borderRadius: "10px"}}>
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "20px", background:"#F5F5DC", borderRadius: "10px", borderBottom:"5px black"}}>
       <img src={Happy_Hiker_Logo} alt="Left Logo" style={{ width: "100px", height: "100px" }} />
         <div>
       
