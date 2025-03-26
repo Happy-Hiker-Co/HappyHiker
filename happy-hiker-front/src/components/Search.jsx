@@ -8,7 +8,8 @@ const Search = ({ onSearch }) => {
   const [filteredTrails, setFilteredTrails] = useState([])
   const [startPointError, setStartPointError] = useState("")
   const [destinationPointError, setDestinationPointError] = useState("")
-  const [trails, setTrails] = useState([]) // Store backend trails
+  const [trails, setTrails] = useState([])
+  const [isFirstSelection, setIsFirstSelection] = useState(true) // Track if next click is for startPoint
 
   // Fetch trails from backend on component mount
   useEffect(() => {
@@ -17,8 +18,7 @@ const Search = ({ onSearch }) => {
         const response = await axios.get("http://localhost:8000/api/trails/")
         setTrails(
           Array.isArray(response.data) ? response.data : [response.data],
-        ) // Handle array or single object
-        // Do not set filteredTrails here to keep it empty until a filter is applied
+        )
       } catch (error) {
         console.error("Error fetching trails:", error)
       }
@@ -152,10 +152,9 @@ const Search = ({ onSearch }) => {
   }
 
   const applyFilter = (filter) => {
-    // Toggle: If the same filter is clicked again, hide the results
     if (activeFilter === filter) {
       setActiveFilter(null)
-      setFilteredTrails([]) // Clear the displayed trails
+      setFilteredTrails([])
       return
     }
 
@@ -168,16 +167,27 @@ const Search = ({ onSearch }) => {
       results = results.filter(
         (trail) => trail.difficulty.toLowerCase() === "moderate",
       )
-    } else if (filter === "popularity") {
+    } else if (filter === "favorites") {
       results.sort((a, b) => b.id - a.id) // Placeholder sorting by ID
     }
 
     setFilteredTrails(results)
   }
 
+  const handleTrailClick = (trailName) => {
+    if (isFirstSelection) {
+      setStartPoint(trailName)
+      setStartPointError("") // Clear any existing error
+      setIsFirstSelection(false) // Next click sets destination
+    } else {
+      setDestinationPoint(trailName)
+      setDestinationPointError("") // Clear any existing error
+      setIsFirstSelection(true) // Reset for next pair
+    }
+  }
+
   const buttonStyle = (filter) => ({
     padding: "5px 10px",
-    marginRight: "10px",
     backgroundColor: activeFilter === filter ? "#4CAF50" : "#f0f0f0",
     color: activeFilter === filter ? "white" : "black",
     border: "1px solid #ccc",
@@ -194,6 +204,15 @@ const Search = ({ onSearch }) => {
     marginLeft: "5px",
     marginBottom: "10px",
     lineHeight: "1.2",
+  }
+
+  const trailStyle = {
+    border: "1px solid #ddd",
+    padding: "10px",
+    marginBottom: "10px",
+    borderRadius: "5px",
+    cursor: "pointer", // Indicate clickable
+    backgroundColor: "#f9f9f9", // Light background for better UX
   }
 
   return (
@@ -241,7 +260,7 @@ const Search = ({ onSearch }) => {
         </div>
       </form>
 
-      <div style={{ marginTop: "20px" }}>
+      <div style={{ marginTop: "20px", display: "flex", gap: "10px" }}>
         <button
           style={buttonStyle("dogFriendly")}
           onClick={() => applyFilter("dogFriendly")}
@@ -255,10 +274,10 @@ const Search = ({ onSearch }) => {
           Difficulty Level
         </button>
         <button
-          style={buttonStyle("popularity")}
-          onClick={() => applyFilter("popularity")}
+          style={buttonStyle("favorites")}
+          onClick={() => applyFilter("favorites")}
         >
-          Popularity
+          Favorites
         </button>
       </div>
 
@@ -269,12 +288,8 @@ const Search = ({ onSearch }) => {
             filteredTrails.map((trail) => (
               <div
                 key={trail.id}
-                style={{
-                  border: "1px solid #ddd",
-                  padding: "10px",
-                  marginBottom: "10px",
-                  borderRadius: "5px",
-                }}
+                style={trailStyle}
+                onClick={() => handleTrailClick(trail.name)}
               >
                 <h4>{trail.name}</h4>
                 <p>Distance: {trail.distance} miles</p>
@@ -352,28 +367,28 @@ export default Search
 //       distance: 14.2,
 //       dogFriendly: false,
 //       difficulty: "hard",
-//       popularity: 4.9,
+//       favorites: 4.9,
 //     },
 //     {
 //       name: "Yosemite Falls",
 //       distance: 7.2,
 //       dogFriendly: false,
 //       difficulty: "moderate",
-//       popularity: 4.7,
+//       favorites: 4.7,
 //     },
 //     {
 //       name: "Mirror Lake",
 //       distance: 2.4,
 //       dogFriendly: true,
 //       difficulty: "easy",
-//       popularity: 4.3,
+//       favorites: 4.3,
 //     },
 //     {
 //       name: "Glacier Point",
 //       distance: 1.0,
 //       dogFriendly: true,
 //       difficulty: "easy",
-//       popularity: 4.8,
+//       favorites: 4.8,
 //     },
 //   ]
 
@@ -525,8 +540,8 @@ export default Search
 //       results = results.filter((trail) => trail.dogFriendly)
 //     } else if (filter === "difficulty") {
 //       results = results.filter((trail) => trail.difficulty === "moderate")
-//     } else if (filter === "popularity") {
-//       results.sort((a, b) => b.popularity - a.popularity)
+//     } else if (filter === "favorites") {
+//       results.sort((a, b) => b.favorites - a.favorites)
 //     }
 
 //     setFilteredTrails(results)
@@ -614,10 +629,10 @@ export default Search
 //           Difficulty Level
 //         </button>
 //         <button
-//           style={buttonStyle("popularity")}
-//           onClick={() => applyFilter("popularity")}
+//           style={buttonStyle("favorites")}
+//           onClick={() => applyFilter("favorites")}
 //         >
-//           Popularity
+//           favorites
 //         </button>
 //       </div>
 
@@ -638,7 +653,7 @@ export default Search
 //               <p>Distance: {trail.distance} miles</p>
 //               <p>Dog-Friendly: {trail.dogFriendly ? "Yes" : "No"}</p>
 //               <p>Difficulty: {trail.difficulty}</p>
-//               <p>Popularity: {trail.popularity}/5</p>
+//               <p>favorites: {trail.favorites}/5</p>
 //             </div>
 //           ))}
 //         </div>
