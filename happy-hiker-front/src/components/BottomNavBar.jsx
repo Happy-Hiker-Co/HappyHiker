@@ -13,7 +13,11 @@ import AudioPlayer from './AudioPlayer';
 import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
 import Stack from '@mui/material/Stack';
 import NavButtons from './NavButtons';
-import UserProfileComponent from './UserProfileComponent';
+
+// Temporarily commented out during Auth0 integration testing
+// import UserProfileComponent from './UserProfileComponent';
+
+
 import { Padding } from '@mui/icons-material';
 
 
@@ -99,7 +103,7 @@ function SwipeableEdgeDrawer(props) {
           <Puller />
         </StyledBox>
             < AudioPlayer />
-            < UserProfileComponent />
+            {/* < UserProfileComponent /> */}
       </SwipeableDrawer>
     </Root>
   );

@@ -1,9 +1,8 @@
-from django.urls import path
-# from .views import auth0_register
-from .views import protected_view
+# user_profile/urls.py
 
+from django.urls import path
+from .views import register_or_get_user
 
 urlpatterns = [
-    # path('auth0-register/', auth0_register, name='auth0-register'),
-    path("protected/", protected_view, name="protected"),
+    path("register/", register_or_get_user, name="register_user"),
 ]
