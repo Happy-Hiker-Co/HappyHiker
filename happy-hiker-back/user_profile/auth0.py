@@ -1,5 +1,3 @@
-# user_profile/auth0.py
-
 import json
 import requests
 from jose import jwt
@@ -10,7 +8,6 @@ AUTH0_DOMAIN = settings.AUTH0_DOMAIN
 API_IDENTIFIER = settings.AUTH0_AUDIENCE
 ALGORITHMS = ["RS256"]
 
-# Decorator to protect views
 def requires_auth(view_func):
     def wrapper(request, *args, **kwargs):
         auth = request.META.get("HTTP_AUTHORIZATION", None)
@@ -23,7 +20,6 @@ def requires_auth(view_func):
 
         token = parts[1]
 
-        # Get public key from Auth0
         jwks_url = f"https://{AUTH0_DOMAIN}/.well-known/jwks.json"
         jwks = requests.get(jwks_url).json()
 
@@ -49,7 +45,7 @@ def requires_auth(view_func):
                     audience=API_IDENTIFIER,
                     issuer=f"https://{AUTH0_DOMAIN}/"
                 )
-                request.user_payload = payload  # you can access this in your view
+                request.user_payload = payload
             except jwt.ExpiredSignatureError:
                 return JsonResponse({"message": "Token expired"}, status=401)
             except jwt.JWTClaimsError:

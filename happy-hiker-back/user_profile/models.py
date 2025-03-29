@@ -1,8 +1,7 @@
 from django.db import models
 
 class User(models.Model):
-    # auth0_id might be used to track info about users
-    auth0_id = models.CharField(max_length=100, unique=True)
+    auth0_id = models.CharField(max_length=255, unique=True, null=True, blank=True)
     name = models.CharField(max_length=255, null=True)
     email = models.EmailField(unique=True)
 
@@ -12,8 +11,6 @@ class User(models.Model):
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    # We may want to use a class for Favorite. See below 
-    # favorites = models.CharField(max_length=255, null=True, blank=True)
     points = models.IntegerField(default=0)
     # history = models.TextField(null=True, blank=True)  # add later?
     level = models.CharField(max_length=50, null=True, blank=True)
@@ -24,6 +21,6 @@ class Profile(models.Model):
 
 class Favorite(models.Model):
     user_profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
-    trail_id = models.IntegerField()  # or a ForeignKey to a Trail model
+    trail_id = models.IntegerField() 
     added_on = models.DateTimeField(auto_now_add=True)
 
